@@ -2,7 +2,7 @@
 Name: Adam Alexander
 CS230: Section 4
 Data: New York Housing Market
-URL: (add Streamlit Cloud URL once deployed)
+URL: https://nyc-housing-explorer.streamlit.app/
 
 Description:
 This program is an interactive NYC Housing Market Explorer built with Streamlit.
@@ -21,6 +21,33 @@ import plotly.express as px
 import plotly.figure_factory as ff
 from sklearn.linear_model import LinearRegression
 
+# --- Real NYC Background ---
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url("https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=2000&q=80");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("""
+<style>
+.block-container {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(4px);
+    padding: 2rem;
+    border-radius: 12px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ---------------------------
 # Global style / constants
 # ---------------------------
@@ -28,6 +55,19 @@ from sklearn.linear_model import LinearRegression
 st.set_page_config(
     page_title="NYC Housing Market Explorer",
     layout="wide",
+)
+
+st.markdown(
+    """
+    <div style="padding: 20px; border-radius: 12px; 
+                background: linear-gradient(90deg, #4b79a1, #283e51);
+                color: white; font-size: 28px; font-weight: bold;
+                text-align: center;">
+        🏙️ Explore New York City's Housing Market — Interactive Real Estate Analysis
+    </div>
+    <br>
+    """,
+    unsafe_allow_html=True
 )
 
 # Consistent colors for property types
@@ -1480,31 +1520,106 @@ def main():
           </style>
           <div class="top-header">🏙️ NYC Housing Market Explorer</div>
       """, unsafe_allow_html=True)
+
     # ---- Sidebar Styling ----
     st.markdown("""
-           <style>
-               section[data-testid="stSidebar"] {
-                   background-color: #f0f2f6;
-                   padding-top: 20px;
-               }
-               .sidebar-title {
-                   font-size: 20px;
-                   font-weight: 700;
-                   margin-top: 20px;
-               }
-           </style>
-       """, unsafe_allow_html=True)
+              <style>
+                  section[data-testid="stSidebar"] {
+                      background-color: #f0f2f6;
+                      padding-top: 20px;
+                  }
+                  .sidebar-title {
+                      font-size: 20px;
+                      font-weight: 700;
+                      margin-top: 20px;
+                  }
+
+                  /* Sidebar nav radio – make it look like clean pills, no red dots */
+                  section[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label {
+                      padding: 4px 10px;
+                      border-radius: 999px;
+                      margin-bottom: 4px;
+                      transition: background-color 0.15s ease, color 0.15s ease;
+                  }
+
+                  /* Hide the default red radio circle in the SIDEBAR only */
+                  section[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label > div:first-child {
+                      display: none;
+                  }
+
+                  /* Selected page pill */
+                  section[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[aria-checked="true"] {
+                      background-color: #e1ecff;   /* soft blue to match header */
+                      color: #1b3a57;
+                      font-weight: 600;
+                  }
+
+                  /* Hover effect */
+                  section[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:hover {
+                      background-color: #dde5f3;
+                  }
+              </style>
+          """, unsafe_allow_html=True)
+
+    # ---- Global tag / chip styling (for multiselect etc.) ----
+    st.markdown("""
+          <style>
+          /* Override default red tag chips everywhere (multiselect selections) */
+          div[data-baseweb="tag"] {
+              background-color: #e1ecff !important;   /* light blue */
+              color: #1b3a57 !important;               /* navy text */
+              border-radius: 999px !important;
+              padding: 2px 8px !important;
+              border: 1px solid #b0c9e8 !important;
+              font-weight: 500 !important;
+          }
+
+          /* The little "x" icon inside the chip */
+          div[data-baseweb="tag"] svg {
+              fill: #1b3a57 !important;
+          }
+
+          /* Hover state for chip */
+          div[data-baseweb="tag"]:hover {
+              background-color: #d4e6ff !important;
+              border-color: #7faee9 !important;
+          }
+          </style>
+      """, unsafe_allow_html=True)
+
     # #[ST3] Sidebar branding + nav
     st.sidebar.image(
         "https://static.streamlit.io/examples/dice.jpg",
         width=80,
     )
-    st.sidebar.markdown("<div class='sidebar-title'>Navigation</div>", unsafe_allow_html=True)
 
-    page = st.sidebar.radio(
-        "Go to:",
-        ("Overview", "Charts", "Map", "About"),
+    # ----- Sidebar Branding Box -----
+    st.sidebar.markdown(
+        """
+        <div style="padding:16px;
+                    background:#f1f3f6;
+                    border-radius:10px;
+                    text-align:left;
+                    font-size:18px;
+                    font-weight:bold;
+                    margin-bottom:12px;">
+            🏠 Real Estate Filters
+        </div>
+        """,
+        unsafe_allow_html=True
     )
+
+    # ----- Pages nav (cleaner styling + icons) -----
+    st.sidebar.markdown("### Pages")
+
+    nav_choice = st.sidebar.radio(
+        "",
+        ("Overview  📊", "Charts  📈", "Map  🗺️", "About  ℹ️"),
+        key="main_nav",
+    )
+
+    # strip to just the page name ("Overview", "Charts", etc.)
+    page = nav_choice.split()[0]
 
     # #[ITERLOOP]
     for _ in range(1):
